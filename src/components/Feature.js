@@ -8,9 +8,9 @@ import { fetchQueryResultsFromTermAndValue } from '../api';
  * 
  * Has a template like this:
  * 
- * <span className="content">
- *  <a href="#" onClick={async (event) => {}}>SOME SEARCH TERM</a>
- * </span>
+    <span className="content">
+        <a href="#" onClick={async (event) => {}}>SOME SEARCH TERM</a>
+    </span>
  *
  * You'll need to read searchTerm, searchValue, setIsLoading, and setSearchResults off of the props.
  * 
@@ -29,8 +29,28 @@ import { fetchQueryResultsFromTermAndValue } from '../api';
  * finally:
  *  - call setIsLoading, set it to false
  */
-const Searchable = (props) => {
-  
+const Searchable = ({ searchTerm, searchValue, setIsLoading, setSearchResults }) => {
+
+    const handleClick = async (event) => {
+        event.preventDefault();
+        setIsLoading(true);
+
+        try {
+            const result = await fetchQueryResultsFromTermAndValue(searchTerm, searchValue);
+            setSearchResults(result);
+
+        } catch (error) {
+            console.error(error)
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    return(
+        <span className="content">
+            <a href="#" onClick={handleClick}>SEARCH</a>
+        </span>
+    )
 }
 
 /**
@@ -67,8 +87,95 @@ const Searchable = (props) => {
  * 
  * This component should be exported as default.
  */
-const Feature = (props) => {
+const Feature = ({ featuredResult }) => {
 
-}
+    if (!featuredResult) {
+        return(
+            <main id="feature"></main>
+        );
+    }
+
+  const {
+      title, 
+      dated, 
+      images, 
+      primaryimageurl, 
+      description, 
+      culture, 
+      style, 
+      technique, 
+      medium, 
+      dimensions, 
+      people, 
+      department, 
+      division, 
+      contact, 
+      creditline
+  } = featuredResult;
+
+  const renderFacts = () => {
+      const facts = [
+          { name: 'Culture', value: culture },
+          { name: 'Style', value: style},
+          { name: 'Technique', value: technique },
+          { name: 'Medium', value: medium },
+          { name: 'Dimensions', value: dimensions},
+          { name: 'Person', value: people?.map((person) => person.displayname).join(', ') },
+          { name: 'Department', value: department},
+          { name: 'Division', value: division},
+          { name: 'Contact', value: contact},
+          { name: 'Creditline', value: creditline}
+      ];
+
+      return facts.map((fact, index) => {
+        if (fact.value) {
+          return (
+              <React.Fragment key={index}>
+                  <span className="title">{fact.name}</span>
+                  <span className="content">{fact.value}</span>
+              </React.Fragment>
+          );
+        } else {
+          return null;
+        }
+      });
+  };
+
+  const renderPhotos = () => {
+    if (images && images.length > 0) {
+      return (
+        <section className="photos">
+          {images.map((image, index) => (
+            <img key={index} src={image.baseimageurl} alt={image.alttext} />
+          ))}
+        </section>
+      );
+    }
+  
+    if (primaryimageurl) {
+      return (
+        <section className="photos">
+          <img src={primaryimageurl} alt={primaryimageurl.alttext} />
+        </section>
+      );
+    }
+  
+    return null;
+  };
+
+
+  return (
+    <main id="feature">
+      <div className="object-feature">
+        <header>
+          <h3>{title}</h3>
+          <h4>{dated}</h4>
+        </header>
+        <section className="facts">{renderFacts()}</section>
+        {renderPhotos()}
+      </div>
+    </main>
+  );
+};
 
 export default Feature;
