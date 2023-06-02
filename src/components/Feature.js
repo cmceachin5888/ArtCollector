@@ -146,7 +146,7 @@ const Feature = ({ featuredResult }) => {
       return (
         <section className="photos">
           {images.map((image, index) => (
-            <img key={index} src={image.baseimageurl} alt={image.alttext} />
+            <img key={`${image.baseimageurl}-${index}`} src={image.baseimageurl} alt={image.alttext} />
           ))}
         </section>
       );
@@ -155,7 +155,7 @@ const Feature = ({ featuredResult }) => {
     if (primaryimageurl) {
       return (
         <section className="photos">
-          <img src={primaryimageurl} alt={primaryimageurl.alttext} />
+          <img src={primaryimageurl} alt={featuredResult.alttext} />
         </section>
       );
     }
