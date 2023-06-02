@@ -4,7 +4,7 @@
  * You need to replace YOUR_API_KEY in the string associated with KEY with your actual API key
  */
 export const BASE_URL = 'https://api.harvardartmuseums.org';
-export const KEY = 'apikey=8521ff4f-8e67-4e0e-b558-11455983a1e7';
+export const KEY = `apikey=${process.env.REACT_APP_ART_COLLECTOR_API_KEY}`;
 
 /**
  * This will make a call to the API for a single term and value (e.g. "person", and "unknown"), and return the result
@@ -43,9 +43,10 @@ export async function fetchQueryResults({
   century,
   classification,
   queryString,
+  medium,
 }) {
   const url = `${ BASE_URL }/object?${ KEY }&classification=${ classification }&century=${ 
-    century }&keyword=${ queryString }`;
+    century }&medium=${ medium }&keyword=${ queryString }`;
 
   try {
     const response = await fetch(url);
@@ -101,4 +102,27 @@ export async function fetchAllClassifications() {
   } catch (error) {
     throw error;
   }
-}
+};
+
+/**
+ * This returns early if there are mediums stored in localStorage, or fetches them from the API and stores them in localStorage if not 
+ */
+export async function fetchAllMediums() {
+  if (localStorage.getItem('mediums')) {
+    return JSON.parse(localStorage.getItem('mediums'));
+  }
+
+  const url = `${ BASE_URL }/medium?${ KEY }&size=100&sort=name`;
+
+  try {
+    const response = await fetch(url);
+    const data = await response.json();
+    const records = data.records;
+
+    localStorage.setItem('mediums', JSON.stringify(records));
+
+    return records;
+  } catch (error) {
+    throw error;
+  }
+};

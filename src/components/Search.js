@@ -6,6 +6,7 @@ import React, { useEffect, useState } from 'react';
 import { 
   fetchAllCenturies,
   fetchAllClassifications,
+  fetchAllMediums,
   fetchQueryResults
 } from '../api';
 
@@ -25,9 +26,11 @@ const Search = ({ setIsLoading, setSearchResults }) => {
    */
   const [centuryList, setCenturyList] = useState([]);
   const [classificationList, setClassificationList] = useState([]);
+  const [mediumList, setMediumList] = useState([]);
   const [queryString, setQueryString] = useState('');
   const [century, setCentury] = useState('any');
   const [classification, setClassification] = useState('any');
+  const [medium, setMedium] = useState('any');
 
   /**
    * Inside of useEffect, use Promise.all([]) with fetchAllCenturies and fetchAllClassifications
@@ -37,10 +40,11 @@ const Search = ({ setIsLoading, setSearchResults }) => {
    * Make sure to console.error on caught errors from the API methods.
    */
   useEffect(() => {
-    Promise.all([fetchAllCenturies(), fetchAllClassifications()])
-      .then(([centuries, classifications]) => {
+    Promise.all([fetchAllCenturies(), fetchAllClassifications(), fetchAllMediums()])
+      .then(([centuries, classifications, mediums]) => {
         setCenturyList(centuries);
         setClassificationList(classifications);
+        setMediumList(mediums);
       })
       .catch((error) => {
         console.error(error);
@@ -72,6 +76,7 @@ const Search = ({ setIsLoading, setSearchResults }) => {
         const results = await fetchQueryResults({
           century,
           classification,
+          medium,
           queryString,
         });
         setSearchResults(results);
@@ -117,6 +122,19 @@ const Search = ({ setIsLoading, setSearchResults }) => {
         ))}
       </select>
      </fieldset>
+     <fieldset>
+      <label htmlFor="select-medium">Medium <span className="medium-count">({ mediumList.length })</span></label>
+      <select 
+        name="medium" 
+        id="select-medium"
+        value={medium} 
+        onChange={(event) => setMedium(event.target.value)}>
+        <option value="any">Any</option>
+        {mediumList.map((medium) => (
+          <option key={medium.id} value={medium.name}>{medium.name}</option>
+        ))}
+      </select>
+     </fieldset>     
     <button>SEARCH</button>
   </form>
 )}
