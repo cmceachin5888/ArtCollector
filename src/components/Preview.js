@@ -63,7 +63,7 @@ const Preview = ({ searchResults, setSearchResults, setFeaturedResult, setIsLoad
           */
         records.map((record, index) => (
           <div  
-              key={ index }
+              key={ record.id }
               className="object-preview"
               onClick={(event) => {
                 // prevent the default

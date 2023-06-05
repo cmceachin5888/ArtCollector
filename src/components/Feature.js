@@ -127,10 +127,10 @@ const Feature = ({ featuredResult }) => {
           { name: 'Creditline', value: creditline}
       ];
 
-      return facts.map((fact, index) => {
+      return facts.map((fact) => {
         if (fact.value) {
           return (
-              <React.Fragment key={index}>
+              <React.Fragment key={fact.id}>
                   <span className="title">{fact.name}</span>
                   <span className="content">{fact.value}</span>
               </React.Fragment>
@@ -145,8 +145,8 @@ const Feature = ({ featuredResult }) => {
     if (images && images.length > 0) {
       return (
         <section className="photos">
-          {images.map((image, index) => (
-            <img key={`${image.baseimageurl}-${index}`} src={image.baseimageurl} alt={image.alttext} />
+          {images.map((image) => (
+            <img key={image.imageid} src={image.baseimageurl} alt={image.alttext} />
           ))}
         </section>
       );
