@@ -36,8 +36,8 @@ const Searchable = ({ searchTerm, searchValue, setIsLoading, setSearchResults })
         setIsLoading(true);
 
         try {
-            const result = await fetchQueryResultsFromTermAndValue(searchTerm, searchValue);
-            setSearchResults(result);
+          const result = await fetchQueryResultsFromTermAndValue(searchTerm, searchValue);
+          setSearchResults(result);
 
         } catch (error) {
             console.error(error)
@@ -48,7 +48,7 @@ const Searchable = ({ searchTerm, searchValue, setIsLoading, setSearchResults })
 
     return(
         <span className="content">
-            <a href="#" onClick={handleClick}>SEARCH</a>
+            <a href="#" onClick={handleClick}>{searchValue}</a>
         </span>
     )
 }
@@ -87,7 +87,7 @@ const Searchable = ({ searchTerm, searchValue, setIsLoading, setSearchResults })
  * 
  * This component should be exported as default.
  */
-const Feature = ({ featuredResult }) => {
+const Feature = ({ featuredResult, setIsLoading, setSearchResults }) => {
 
     if (!featuredResult) {
         return(
@@ -115,26 +115,38 @@ const Feature = ({ featuredResult }) => {
 
   const renderFacts = () => {
       const facts = [
-          { name: 'Culture', value: culture },
+          { name: 'Description', value: description },        
+          { name: 'Culture', value: culture, searchable: true },
           { name: 'Style', value: style},
-          { name: 'Technique', value: technique },
-          { name: 'Medium', value: medium },
+          { name: 'Technique', value: technique, searchable: true },
+          { name: 'Medium', value: medium, searchable: true },
           { name: 'Dimensions', value: dimensions},
-          { name: 'Person', value: people?.map((person) => person.displayname).join(', ') },
+          { name: 'Person', value: people?.map((person) => person.displayname).join(', '), searchable: true },
           { name: 'Department', value: department},
           { name: 'Division', value: division},
           { name: 'Contact', value: contact},
           { name: 'Creditline', value: creditline}
       ];
 
-      return facts.map((fact) => {
+      return facts.map((fact, index) => {
         if (fact.value) {
-          return (
-              <React.Fragment key={fact.id}>
-                  <span className="title">{fact.name}</span>
-                  <span className="content">{fact.value}</span>
+          if (fact.searchable) {
+            return (
+              <React.Fragment key={index}>
+                <span className="title">{fact.name}</span>
+                <span className="content">
+                  <Searchable searchTerm={fact.name.toLowerCase()} searchValue={fact.value} setIsLoading={setIsLoading} setSearchResults={setSearchResults} />
+                </span>
               </React.Fragment>
-          );
+            );
+          } else {
+            return (
+              <React.Fragment key={index}>
+                <span className="title">{fact.name}</span>
+                <span className="content">{fact.value}</span>
+              </React.Fragment>
+            );
+          }
         } else {
           return null;
         }

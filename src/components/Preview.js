@@ -61,7 +61,7 @@ const Preview = ({ searchResults, setSearchResults, setFeaturedResult, setIsLoad
               }
             </div>
           */
-        records.map((record, index) => (
+        records.map((record) => (
           <div  
               key={ record.id }
               className="object-preview"
